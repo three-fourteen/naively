@@ -16,3 +16,31 @@ export interface SummarizeResult {
     message: string
   }
 }
+
+export interface TranslateOptions {
+  sourceLanguage: string
+  targetLanguage: string
+}
+
+export interface TranslateResult {
+  ok: boolean
+  data?: string
+  error?: {
+    code: string
+    message: string
+  }
+}
+
+export interface DetectedLanguage {
+  detectedLanguage: string
+  confidence: number
+}
+
+export interface DetectLanguageResult {
+  ok: boolean
+  data?: DetectedLanguage[]
+  error?: {
+    code: string
+    message: string
+  }
+}

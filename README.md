@@ -1,18 +1,18 @@
 # naively
 
-A minimal TypeScript wrapper around [Chrome Built-in AI APIs](https://developer.chrome.com/docs/ai/built-in-apis), starting with the Summarizer API.
+A minimal TypeScript wrapper around [Chrome Built-in AI APIs](https://developer.chrome.com/docs/ai/built-in-apis).
 
 ## Status
 
 Chrome Built-in AI APIs are actively shipping. As of **Chrome 138** (stable):
 
-| API | Status |
-|-----|--------|
-| [Summarizer](https://developer.chrome.com/docs/ai/summarizer-api) | ✅ Stable |
-| [Translator](https://developer.chrome.com/docs/ai/translator-api) | ✅ Stable |
-| [Language Detector](https://developer.chrome.com/docs/ai/language-detection) | ✅ Stable |
-| Writer / Rewriter | 🧪 Developer Trial |
-| Prompt API (web) | 🔬 Origin Trial |
+| API | Status | Supported |
+|-----|--------|-----------|
+| [Summarizer](https://developer.chrome.com/docs/ai/summarizer-api) | ✅ Stable | ✅ |
+| [Translator](https://developer.chrome.com/docs/ai/translator-api) | ✅ Stable | ✅ |
+| [Language Detector](https://developer.chrome.com/docs/ai/language-detection) | ✅ Stable | ✅ |
+| Writer / Rewriter | 🧪 Developer Trial | Soon |
+| Prompt API (web) | 🔬 Origin Trial | Soon |
 
 > These APIs run a local Gemini Nano model on the user's device — no API key or network request required after the initial model download.
 
@@ -36,25 +36,25 @@ npm install naively
 ### Check support
 
 ```ts
-import { getAiSupport, isSummarizerSupported } from 'naively'
+import { getAiSupport, isSummarizerSupported, isTranslatorSupported, isLanguageDetectorSupported } from 'naively'
 
-// Quick boolean check
-if (isSummarizerSupported()) {
-  console.log('Summarizer API available')
-}
+// Quick boolean checks
+isSummarizerSupported()       // true | false
+isTranslatorSupported()       // true | false
+isLanguageDetectorSupported() // true | false
 
-// Full support details including model availability
+// Full support details
 const support = await getAiSupport()
-console.log(support)
 // {
-//   summarizer: {
-//     supported: true,
-//     availability: 'readily' | 'downloadable' | 'unavailable' | 'unsupported'
-//   }
+//   summarizer:       { supported: true, availability: 'readily' | 'downloadable' | 'unavailable' | 'unsupported' }
+//   translator:       { supported: true }
+//   languageDetector: { supported: true, availability: 'readily' | 'downloadable' | 'unavailable' | 'unsupported' }
 // }
 ```
 
-**Availability values:**
+> Translator availability is language-pair specific — `naively` checks it internally when you call `translate()`.
+
+**Summarizer availability values:**
 
 | Value | Meaning |
 |-------|---------|
@@ -77,7 +77,7 @@ if (result.ok) {
 }
 ```
 
-### With options
+With options:
 
 ```ts
 const result = await summarize(articleText, {
@@ -87,38 +87,87 @@ const result = await summarize(articleText, {
 })
 ```
 
+### Translate text
+
+Language codes follow the [BCP 47](https://www.rfc-editor.org/rfc/rfc5646) format (e.g. `'en'`, `'fr'`, `'es'`, `'ja'`).
+
+```ts
+import { translate } from 'naively'
+
+const result = await translate('Hello, world!', {
+  sourceLanguage: 'en',
+  targetLanguage: 'fr',
+})
+
+if (result.ok) {
+  console.log(result.data) // 'Bonjour, le monde !'
+} else {
+  console.error(result.error?.message)
+}
+```
+
 ## API Reference
 
 ### `summarize(text, options?): Promise<SummarizeResult>`
 
-Returns a `SummarizeResult` — always, without throwing.
+| Option | Type | Default |
+|--------|------|---------|
+| `type` | `'tl;dr' \| 'key-points' \| 'teaser' \| 'headline'` | `'key-points'` |
+| `length` | `'short' \| 'medium' \| 'long'` | `'medium'` |
+| `format` | `'plain-text' \| 'markdown'` | `'plain-text'` |
+
+### `detectLanguage(text): Promise<DetectLanguageResult>`
+
+Returns a ranked list of language candidates with confidence scores (0.0–1.0):
+
+```ts
+const result = await detectLanguage('Bonjour le monde')
+
+if (result.ok) {
+  console.log(result.data)
+  // [
+  //   { detectedLanguage: 'fr', confidence: 0.998 },
+  //   { detectedLanguage: 'en', confidence: 0.001 },
+  // ]
+}
+```
+
+> Accuracy is low for very short text or single words.
+
+### `translate(text, options): Promise<TranslateResult>`
+
+| Option | Type | Required |
+|--------|------|----------|
+| `sourceLanguage` | `string` (BCP 47) | ✅ |
+| `targetLanguage` | `string` (BCP 47) | ✅ |
+
+### `getAiSupport()`
+
+Returns support and availability details for all built-in AI APIs.
+
+### `isSummarizerSupported() / isTranslatorSupported(): boolean`
+
+Synchronous presence checks.
+
+---
+
+Both `summarize()` and `translate()` always return a result without throwing:
 
 ```ts
 interface SummarizeResult {
   ok: boolean
   data?: string
-  error?: {
-    code: string    // e.g. 'SUMMARIZE_FAILED'
-    message: string
-  }
+  error?: { code: string; message: string }
+}
+
+interface TranslateResult {
+  ok: boolean
+  data?: string
+  error?: { code: string; message: string }
 }
 ```
 
-Edge cases handled internally:
-
-- Empty text
-- API not present in browser
-- Model unavailable
-- Errors during model creation or summarization
-- Model resource cleanup (`destroy()`) always runs
-
-### `getAiSupport(): Promise<{ summarizer: { supported: boolean, availability: string } }>`
-
-Returns support and availability details for each built-in AI API.
-
-### `isSummarizerSupported(): boolean`
-
-Synchronous check — returns `true` if `Summarizer` exists in `window`.
+Edge cases handled internally: empty text, API not present, model unavailable, creation/runtime errors, and model cleanup (`destroy()`).
 
 ## Development
 
@@ -132,5 +181,7 @@ pnpm typecheck  # tsc --noEmit
 
 - [Chrome Built-in AI overview](https://developer.chrome.com/docs/ai/built-in-apis)
 - [Summarizer API docs](https://developer.chrome.com/docs/ai/summarizer-api)
+- [Translator API docs](https://developer.chrome.com/docs/ai/translator-api)
+- [Language Detector API docs](https://developer.chrome.com/docs/ai/language-detection)
 - [People + AI Guidebook](https://pair.withgoogle.com/guidebook/) — UX guidance for AI features
 - [`@types/dom-chromium-ai`](https://www.npmjs.com/package/@types/dom-chromium-ai) — official TypeScript types for Chrome AI APIs

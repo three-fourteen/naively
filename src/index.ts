@@ -1,3 +1,5 @@
 export * from './types'
 export * from './core/support'
 export * from './summarizer/summarize'
+export * from './translator/translate'
+export * from './language-detector/detect'
