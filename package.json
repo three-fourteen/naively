@@ -1,0 +1,29 @@
+{
+  "name": "naively",
+  "version": "0.1.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/naively.umd.cjs",
+  "module": "./dist/naively.js",
+  "exports": {
+    ".": {
+      "import": "./dist/naively.js",
+      "require": "./dist/naively.umd.cjs"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

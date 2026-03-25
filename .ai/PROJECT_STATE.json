@@ -1,0 +1,13 @@
+{
+  "project": "chrome-ai",
+  "phase": "completed",
+  "current_task": null,
+  "blocked": false,
+  "completed_tasks": [
+    "T-001-setup-project",
+    "T-002-types",
+    "T-003-feature-detection",
+    "T-004-summarize",
+    "T-005-exports"
+  ]
+}
