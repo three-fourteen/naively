@@ -6,6 +6,23 @@ export interface SummarizeOptions {
   type?: SummaryType
   length?: SummaryLength
   format?: SummaryFormat
+  sharedContext?: string
+  expectedInputLanguages?: string[]
+  expectedContextLanguages?: string[]
+  outputLanguage?: string
+}
+
+export interface SummarizeCallOptions {
+  context?: string
+}
+
+export interface SummarizeStreamingResult {
+  ok: boolean
+  stream?: ReadableStream<string>
+  error?: {
+    code: string
+    message: string
+  }
 }
 
 export interface SummarizeResult {
