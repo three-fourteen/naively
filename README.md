@@ -87,6 +87,18 @@ const result = await summarize(articleText, {
 })
 ```
 
+#### Assign expected languages
+
+Chrome downloads language packs on demand, so declaring the languages you expect up front lets it prepare the right ones before summarizing. All values are [BCP 47](https://www.rfc-editor.org/rfc/rfc5646) language codes — see [Assign expected languages](https://developer.chrome.com/docs/ai/summarizer-api#assign_expected_languages) in the Chrome docs.
+
+```ts
+const result = await summarize(articleText, {
+  expectedInputLanguages: ['en', 'es'],  // languages the input text may be in
+  expectedContextLanguages: ['en'],      // languages sharedContext/context may be in
+  outputLanguage: 'es',                  // language the summary should be written in
+})
+```
+
 ### Translate text
 
 Language codes follow the [BCP 47](https://www.rfc-editor.org/rfc/rfc5646) format (e.g. `'en'`, `'fr'`, `'es'`, `'ja'`).
@@ -115,6 +127,10 @@ if (result.ok) {
 | `type` | `'tl;dr' \| 'key-points' \| 'teaser' \| 'headline'` | `'key-points'` |
 | `length` | `'short' \| 'medium' \| 'long'` | `'medium'` |
 | `format` | `'plain-text' \| 'markdown'` | `'plain-text'` |
+| `sharedContext` | `string` | — |
+| `expectedInputLanguages` | `string[]` (BCP 47) | — |
+| `expectedContextLanguages` | `string[]` (BCP 47) | — |
+| `outputLanguage` | `string` (BCP 47) | — |
 
 ### `detectLanguage(text): Promise<DetectLanguageResult>`
 
