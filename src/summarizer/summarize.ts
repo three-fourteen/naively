@@ -107,6 +107,8 @@ export async function summarizeStreaming(
   }
 
   const result = await getSummarizerInstance(options)
+  // Non-null assertion relies on errorResult() always populating `error` — if that
+  // helper's shape ever changes, this needs to be revisited.
   if ('error' in result) return streamingErrorResult(result.error.error!.message)
 
   const { summarizer } = result

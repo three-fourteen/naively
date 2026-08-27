@@ -12,4 +12,7 @@ export default defineConfig({
       // No external deps — bundle everything
     },
   },
+  test: {
+    environment: "jsdom",
+  },
 });

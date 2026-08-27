@@ -185,12 +185,17 @@ interface TranslateResult {
 
 Edge cases handled internally: empty text, API not present, model unavailable, creation/runtime errors, and model cleanup (`destroy()`).
 
+## Design Notes
+
+- **No session reuse.** Every call to `summarize()`, `summarizeStreaming()`, `translate()`, and `detectLanguage()` creates a fresh model instance and calls `destroy()` on it once the call finishes. This keeps the API stateless and leak-free, but it means each call pays the model's `create()` cost again — there's currently no way to hold a session open across multiple calls. If you need to process many texts back-to-back with the same options, batch them yourself and be aware of the repeated setup cost; a session-reuse API may be added if a concrete use case needs it.
+
 ## Development
 
 ```bash
 pnpm install
 pnpm build      # outputs to dist/
 pnpm typecheck  # tsc --noEmit
+pnpm test       # runs the vitest suite (jsdom-mocked browser AI APIs)
 ```
 
 ## Further Reading
