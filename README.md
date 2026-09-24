@@ -202,14 +202,21 @@ pnpm test       # runs the vitest suite (jsdom-mocked browser AI APIs)
 
 ### Releasing
 
-Publishing to npm is automated: pushing a `v*.*.*` tag triggers [`.github/workflows/publish.yml`](.github/workflows/publish.yml), which runs typecheck/test/build and then `pnpm publish`. To cut a release:
+Publishing to npm is automated: pushing a `v*.*.*` tag triggers [`.github/workflows/publish.yml`](.github/workflows/publish.yml), which runs typecheck/test/build and then `npm publish`. To cut a release:
 
 ```bash
 npm version patch   # or minor / major — updates package.json and creates a git tag
 git push --follow-tags
 ```
 
-The workflow fails fast if the pushed tag doesn't match the version in `package.json`. It authenticates with the `NPM_TOKEN` repository secret, which must be an npm [automation token](https://docs.npmjs.com/creating-and-viewing-access-tokens) with publish rights on this package.
+The workflow fails fast if the pushed tag doesn't match the version in `package.json`. It authenticates via npm's [Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) (OIDC) — no `NPM_TOKEN` secret needed. One-time setup on npmjs.com, under the package's **Settings → Trusted Publisher**:
+
+- Provider: GitHub Actions
+- Organization / repository: `three-fourteen/naively`
+- Workflow filename: `publish.yml`
+- Environment: (leave blank)
+
+The package must already exist on npm before you can add a trusted publisher for it.
 
 ## Further Reading
 

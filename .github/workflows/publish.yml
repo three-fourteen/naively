@@ -19,7 +19,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           registry-url: https://registry.npmjs.org
 
       - run: pnpm install --frozen-lockfile
@@ -39,6 +39,10 @@ jobs:
             exit 1
           fi
 
-      - run: pnpm publish --no-git-checks --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Trusted Publishing (OIDC) requires npm >=11.5.1; the npm bundled with
+      # setup-node isn't guaranteed to be new enough, and pnpm's own OIDC
+      # publish support has been unreliable across releases, so we upgrade
+      # npm and hand the actual publish off to it.
+      - run: npm install -g npm@latest
+
+      - run: npm publish --provenance --access public
