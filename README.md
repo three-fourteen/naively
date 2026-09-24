@@ -200,6 +200,17 @@ pnpm typecheck  # tsc --noEmit
 pnpm test       # runs the vitest suite (jsdom-mocked browser AI APIs)
 ```
 
+### Releasing
+
+Publishing to npm is automated: pushing a `v*.*.*` tag triggers [`.github/workflows/publish.yml`](.github/workflows/publish.yml), which runs typecheck/test/build and then `pnpm publish`. To cut a release:
+
+```bash
+npm version patch   # or minor / major — updates package.json and creates a git tag
+git push --follow-tags
+```
+
+The workflow fails fast if the pushed tag doesn't match the version in `package.json`. It authenticates with the `NPM_TOKEN` repository secret, which must be an npm [automation token](https://docs.npmjs.com/creating-and-viewing-access-tokens) with publish rights on this package.
+
 ## Further Reading
 
 - [Chrome Built-in AI overview](https://developer.chrome.com/docs/ai/built-in-apis)
