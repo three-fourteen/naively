@@ -45,4 +45,7 @@ jobs:
       # npm and hand the actual publish off to it.
       - run: npm install -g npm@latest
 
-      - run: npm publish --provenance --access public
+      # Stages the release rather than publishing it directly — the trusted
+      # publisher config for this package only allows staged publishes, so a
+      # human approves the promotion on npmjs.com for each release.
+      - run: npm stage publish --provenance --access public
