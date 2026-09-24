@@ -4,15 +4,16 @@ A minimal TypeScript wrapper around [Chrome Built-in AI APIs](https://developer.
 
 ## Status
 
-Chrome Built-in AI APIs are actively shipping. As of **Chrome 138** (stable):
+Chrome Built-in AI APIs are actively shipping. As of **Chrome 138+** (stable):
 
 | API | Status | Supported |
 |-----|--------|-----------|
-| [Summarizer](https://developer.chrome.com/docs/ai/summarizer-api) | ✅ Stable | ✅ |
-| [Translator](https://developer.chrome.com/docs/ai/translator-api) | ✅ Stable | ✅ |
-| [Language Detector](https://developer.chrome.com/docs/ai/language-detection) | ✅ Stable | ✅ |
-| Writer / Rewriter | 🧪 Developer Trial | Soon |
-| Prompt API (web) | 🔬 Origin Trial | Soon |
+| [Summarizer](https://developer.chrome.com/docs/ai/summarizer-api) | ✅ Stable (Chrome 138+) | ✅ |
+| [Translator](https://developer.chrome.com/docs/ai/translator-api) | ✅ Stable (Chrome 138+) | ✅ |
+| [Language Detector](https://developer.chrome.com/docs/ai/language-detection) | ✅ Stable (Chrome 138+) | ✅ |
+| [Writer](https://developer.chrome.com/docs/ai/writer-api) / [Rewriter](https://developer.chrome.com/docs/ai/rewriter-api) | 🔬 Origin Trial | Soon |
+| [Proofreader](https://developer.chrome.com/docs/ai/proofreader-api) | 🔬 Origin Trial (Chrome 141–145) | Soon |
+| [Prompt API](https://developer.chrome.com/docs/ai/prompt-api) | ✅ Stable, but extensions-only for now — multimodal input is EPP-only | Soon |
 
 > These APIs run a local Gemini Nano model on the user's device — no API key or network request required after the initial model download.
 
@@ -54,12 +55,13 @@ const support = await getAiSupport()
 
 > Translator availability is language-pair specific — `naively` checks it internally when you call `translate()`.
 
-**Summarizer availability values:**
+**Summarizer / Language Detector availability values:**
 
 | Value | Meaning |
 |-------|---------|
-| `readily` | Model is downloaded and ready |
+| `available` | Model is downloaded and ready (older Chrome builds report this as `readily`; `naively` accepts both) |
 | `downloadable` | Supported, but model needs to download first |
+| `downloading` | Model download is already in progress |
 | `unavailable` | Hardware/OS doesn't meet requirements |
 | `unsupported` | API not present in this browser |
 
