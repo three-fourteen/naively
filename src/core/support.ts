@@ -1,7 +1,13 @@
 // Chrome Built-in AI APIs live on the global window object.
 // We avoid importing types from @types/chrome to keep the lib dep-free.
 
-type AvailabilityResult = 'readily' | 'available' | 'downloadable' | 'unavailable' | 'unsupported'
+type AvailabilityResult =
+  | 'readily'
+  | 'available'
+  | 'downloadable'
+  | 'downloading'
+  | 'unavailable'
+  | 'unsupported'
 
 /**
  * Safely checks Summarizer.availability() without throwing.
